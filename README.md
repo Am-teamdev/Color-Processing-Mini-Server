@@ -43,3 +43,7 @@ _این بخش را خودتان پر کنید_
 ## License
 
 این پروژه تحت **MIT License** منتشر شده است. برای جزئیات بیشتر، لطفاً فایل `LICENSE` را مشاهده کنید.
+
+
+
+For Persian (فارسی) version, click [here](README-fa.md)
