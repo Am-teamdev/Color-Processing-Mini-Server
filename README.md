@@ -5,6 +5,8 @@
 
 This project is designed mainly for **ESP32-CAM**, but it can be adapted for similar projects. It allows capturing images, sending them to a server, and detecting the dominant color (currently **red and green** only).
 
+For Persian (فارسی) version, click [here](README-fa.md)
+
 ## Features
 
 - Capture images with **ESP32-CAM** and send them to the server
