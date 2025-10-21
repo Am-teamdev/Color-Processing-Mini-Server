@@ -3,8 +3,8 @@ app = Flask(__name__)
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    # print(request.headers)
-    print(request.data)
+    print(request.headers)
+
 
     # if data:
     #     with open('esp.jpg', 'wb') as pic:
@@ -14,4 +14,4 @@ def upload():
     #     return 400, "EROR"
     return 'ok', 200
 
-app.run(host='0.0.0.0', port=5000)
+app.run(host='192.168.4.2', port=5000)
