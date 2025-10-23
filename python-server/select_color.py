@@ -27,8 +27,8 @@ def detect_card_color(image_path):
     lower_red2 = np.array([170, 70, 50])
     upper_red2 = np.array([180, 255, 255])
 
-    lower_green = np.array([35, 70, 50])
-    upper_green = np.array([85, 255, 255])
+    lower_green = np.array([57, 232, 228])
+    upper_green = np.array([189, 255, 255])
 
     mask_red = cv2.inRange(hsv, lower_red1, upper_red1) | cv2.inRange(hsv, lower_red2, upper_red2)
     mask_green = cv2.inRange(hsv, lower_green, upper_green)
