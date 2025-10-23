@@ -121,9 +121,9 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 
-const char ssid[] = "Galaxy A322179";
+const char ssid[] = "amir";
 const char pass[] = "amir1387";
-const char server[] = "10.33.93.38";
+const char server[] = "192.168.43.107";
 const int port = 5000;
 
 WiFiClient client;
@@ -218,7 +218,7 @@ void send_image_to_server() {
   client.print("Content-Length: ");
   client.println(jpeg_len);
   client.println("Connection: keep-alive");  // تغییر این خط
-  client.println("Keep-Alive: timeout=30, max=100");
+  // client.println("Keep-Alive: timeout=30, max=100");
   client.println();
 
   // ارسال داده تصویر
@@ -279,8 +279,8 @@ bool config() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_YUV422;  // تغییر به JPEG برای سادگی
   config.grab_mode = CAMERA_GRAB_LATEST;
-  config.frame_size = FRAMESIZE_SVGA;
-  config.jpeg_quality = 10;
+  config.frame_size = FRAMESIZE_HQVGA;
+  config.jpeg_quality = 18;
   config.fb_count = 2;
   
   esp_err_t err = esp_camera_init(&config);
