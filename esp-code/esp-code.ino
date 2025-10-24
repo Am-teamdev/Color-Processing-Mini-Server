@@ -4,7 +4,7 @@
 
 const char ssid[] = "amir";
 const char pass[] = "amir1387";
-const char server[] = "192.168.43.107";
+const char server[] = "192.168.4.2";
 const int port = 5000;
 
 WiFiClient client;
@@ -17,7 +17,7 @@ void setup() {
     delay(1000);
   }
 
-  while (!connect_wifi(ssid, pass)) {
+  while (!biuld_wifie(ssid, pass)) {
     Serial.println("ERROR WiFi");
     delay(1000);
   }
@@ -113,10 +113,9 @@ void send_image_to_server() {
   while (client.connected()) {
     if (client.available()) {
       line = client.readStringUntil('\n');
-      Serial.println("Response: " + line);
     }
   }
-  Serial.println("Responsesssssssss: " + line);
+  Serial.println("Respons: " + line);
 
   // پاکسازی
   esp_camera_fb_return(fb);
@@ -160,15 +159,13 @@ bool config() {
   return true;
 }
 
-bool connect_wifi(const char ssid[], const char pass[]) {
-  WiFi.begin(ssid, pass);
-  int timeout = 0;
-  while (WiFi.status() != WL_CONNECTED && timeout < 20) {
-    delay(500);
-    Serial.print(".");
-    timeout++;
+bool biuld_wifie(const char ssid[], const char pass[]) {
+  bool result = WiFi.softAP(ssid, pass);
+  if (result) {
+    return true;
+  } else {
+    return false;
   }
-  return WiFi.status() == WL_CONNECTED;
 }
 
 camera_fb_t* get_pictuer() {
