@@ -13,51 +13,67 @@ def detect_card_color(image_path):
         raise FileNotFoundError(f"Cannot open image: {image_path}")
 
     height, width = img.shape[:2]
+    total_area = height * width
 
-    crop_left = int(width * 0.33)
-    crop_right = int(width * 0.33)
-    center_w = width - crop_left - crop_right
+    # محاسبه 70% از مساحت تصویر
+    min_required_area = total_area * 0.7
 
-    center_img = img[:, crop_left:crop_left + center_w]
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    hsv = cv2.cvtColor(center_img, cv2.COLOR_BGR2HSV)
-
+    # محدوده‌های رنگی قرمز
     lower_red1 = np.array([0, 70, 50])
     upper_red1 = np.array([10, 255, 255])
     lower_red2 = np.array([170, 70, 50])
     upper_red2 = np.array([180, 255, 255])
 
-    lower_green = np.array([57, 232, 228])
-    upper_green = np.array([189, 255, 255])
+    # محدوده رنگی سبز
+    lower_green = np.array([40, 70, 50])  # گسترش محدوده سبز
+    upper_green = np.array([80, 255, 255])
 
+    # ایجاد ماسک‌ها
     mask_red = cv2.inRange(hsv, lower_red1, upper_red1) | cv2.inRange(hsv, lower_red2, upper_red2)
     mask_green = cv2.inRange(hsv, lower_green, upper_green)
 
-    def find_largest_contour(mask):
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if not contours:
-            return None, 0
-        largest = max(contours, key=cv2.contourArea)
-        return largest, cv2.contourArea(largest)
+    def calculate_color_percentage(mask):
+        # محاسبه مجموع مساحت تمام نواحی رنگی
+        total_color_pixels = cv2.countNonZero(mask)
+        return (total_color_pixels / total_area) * 100
 
-    largest_red, area_red = find_largest_contour(mask_red)
-    largest_green, area_green = find_largest_contour(mask_green)
+    # محاسبه درصد هر رنگ
+    red_percentage = calculate_color_percentage(mask_red)
+    green_percentage = calculate_color_percentage(mask_green)
 
-    min_area = 5000
+    print(f"Red: {red_percentage:.2f}%")
+    print(f"Green: {green_percentage:.2f}%")
 
-    if area_red > area_green and area_red > min_area:
+    threshold = 60.0  # آستانه 70%
+
+    if red_percentage >= threshold and red_percentage > green_percentage:
         card_color = "red"
-        largest_contour = largest_red
-    elif area_green > area_red and area_green > min_area:
+        # پیدا کردن بزرگترین کانتور قرمز برای نمایش
+        contours, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if contours:
+            largest_contour = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(largest_contour)
+            bbox = (x, y, w, h)
+        else:
+            bbox = (0, 0, width, height)
+
+    elif green_percentage >= threshold and green_percentage > red_percentage:
         card_color = "green"
-        largest_contour = largest_green
+        # پیدا کردن بزرگترین کانتور سبز برای نمایش
+        contours, _ = cv2.findContours(mask_green, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if contours:
+            largest_contour = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(largest_contour)
+            bbox = (x, y, w, h)
+        else:
+            bbox = (0, 0, width, height)
     else:
-        return None, None, img
+        card_color = "none"
+        bbox = None
 
-    x, y, w, h = cv2.boundingRect(largest_contour)
-    x_full = x + crop_left
-
-    return card_color, (x_full, y, w, h), img
+    return card_color, bbox, img, red_percentage, green_percentage
 
 
 def process_and_show(card_color, rect, img):
